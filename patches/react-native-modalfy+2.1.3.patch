@@ -1,0 +1,11 @@
+diff --git a/node_modules/react-native-modalfy/index.ts b/node_modules/react-native-modalfy/index.ts
+index c688af6..861a2d5 100644
+--- a/node_modules/react-native-modalfy/index.ts
++++ b/node_modules/react-native-modalfy/index.ts
+@@ -2,5 +2,6 @@ export { default as createModalStack } from './lib/createModalStack'
+ export { default as ModalProvider } from './lib/ModalProvider'
+ export { default as withModal } from './lib/withModal'
+ export { default as useModal } from './lib/useModal'
++export { default as ModalState } from './lib/ModalState'
+ export { modalfy } from './lib/ModalState'
+ export * from './types'

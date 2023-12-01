@@ -1,0 +1,67 @@
+diff --git a/node_modules/react-native-responsive-screen/index.d.ts b/node_modules/react-native-responsive-screen/index.d.ts
+index 6ee16ff..9c4c631 100644
+--- a/node_modules/react-native-responsive-screen/index.d.ts
++++ b/node_modules/react-native-responsive-screen/index.d.ts
+@@ -3,6 +3,6 @@ declare module 'react-native-responsive-screen' {
+ 
+   export function widthPercentageToDP(widthPercent: string | number): number;
+   export function heightPercentageToDP(heightPercent: string | number): number;
+-  export function listenOrientationChange(screenClassComponent: Component<any, any>): void;
++  export function listenOrientationChange(screenClassComponent: Component<any, any> | Function): void;
+   export function removeOrientationListener(): void;
+ }
+diff --git a/node_modules/react-native-responsive-screen/index.js b/node_modules/react-native-responsive-screen/index.js
+index f620420..c5e2a33 100644
+--- a/node_modules/react-native-responsive-screen/index.js
++++ b/node_modules/react-native-responsive-screen/index.js
+@@ -1,5 +1,5 @@
+ // packages
+-import { Dimensions, PixelRatio } from 'react-native';
++import { Dimensions, PixelRatio, EmitterSubscription } from 'react-native';
+ 
+ // Retrieve initial screen's width
+ let screenWidth = Dimensions.get('window').width;
+@@ -7,6 +7,8 @@ let screenWidth = Dimensions.get('window').width;
+ // Retrieve initial screen's height
+ let screenHeight = Dimensions.get('window').height;
+ 
++let dimensionsList;
++
+ /**
+  * Converts provided width percentage to independent pixel (dp).
+  * @param  {string} widthPercent The percentage of screen's width that UI element should cover
+@@ -47,15 +49,19 @@ const heightPercentageToDP = heightPercent => {
+  *                      invoke setState method and trigger screen rerender (this.setState()).
+  */
+ const listenOrientationChange = that => {
+-  Dimensions.addEventListener('change', newDimensions => {
++  dimensionsList = Dimensions.addEventListener('change', newDimensions => {
+     // Retrieve and save new dimensions
+     screenWidth = newDimensions.window.width;
+     screenHeight = newDimensions.window.height;
+ 
+     // Trigger screen's rerender with a state update of the orientation variable
+-    that.setState({
+-      orientation: screenWidth < screenHeight ? 'portrait' : 'landscape'
+-    });
++    if (that?.setState == null) {
++			that(screenWidth < screenHeight ? 'portrait' : 'landscape');
++		} else {
++			that.setState({
++				orientation: screenWidth < screenHeight ? 'portrait' : 'landscape'
++			});
++		}
+   });
+ };
+ 
+@@ -66,7 +72,9 @@ const listenOrientationChange = that => {
+  * avoid adding new listeners every time the same component is re-mounted.
+  */
+ const removeOrientationListener = () => {
+-  Dimensions.removeEventListener('change', () => {});
++  if(dimensionsList) {
++    dimensionsList.remove()
++  }
+ };
+ 
+ export {
